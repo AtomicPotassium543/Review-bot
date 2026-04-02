@@ -20,6 +20,11 @@ bot = commands.Bot(
 async def review(interaction, service: str, message: str, rating: commands.Range[int, 1, 5]):
     await interaction.response.defer(ephemeral=True)
 
+    client_role = interaction.guild.get_role(config.client_id)
+    if client_role not in interaction.user.roles:
+        await interaction.edit_original_response(content="You must be a client to submit a review.")
+        return
+
     review_channel = bot.get_channel(config.review_channel)
 
     if review_channel:
