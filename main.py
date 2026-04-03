@@ -74,7 +74,10 @@ async def give_review_allowance(interaction, user: disnake.User):
     with open("allowance.json", "r") as f:
         allowance = json.load(f)
 
-        allowance[str(user.id)] = True
+        if allowance.get(str(user.id)):
+            allowance[str(user.id)] += 1
+        else:
+            allowance[str(user.id)] = 0
 
     with open("allowance.json", "w") as f:
         json.dump(allowance, f)
