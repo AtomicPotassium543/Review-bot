@@ -1,3 +1,5 @@
+import json
+
 import disnake
 from disnake.ext import commands
 from dotenv import load_dotenv
@@ -57,6 +59,27 @@ async def review(interaction, service: str, message: str, rating: commands.Range
         return
     
     await interaction.edit_original_response(content="Thank you for the review, your review has been received!")
+
+@bot.slash_command(
+    name="give_review_allowance",
+    description="Give a user the ability to submit reviews."
+)
+async def give_review_allowance(interaction, user: disnake.User):
+    await interaction.response.defer(ephemeral=True)
+
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.edit_original_response(content="You must be an administrator to give review allowance!")
+        return
+    
+    with open("allowance.json", "r") as f:
+        allowance = json.load(f)
+
+        allowance[str(user.id)] = True
+
+    with open("allowance.json", "w") as f:
+        json.dump(allowance, f)
+
+    await interaction.edit_original_response(content=f"Gave review allowance to {user.mention}.")
 
 bot.run(
     os.getenv("TOKEN")
